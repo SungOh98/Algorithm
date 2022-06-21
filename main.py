@@ -1,0 +1,331 @@
+'''
+FCFS, RR, SPN, SRTN, HRRN
+'''
+import heapq
+
+
+class Process:
+    def __init__(self, number, arrive_time, burst_time):
+        self._number = number
+        self.arrive_time = arrive_time
+        self.burst_time = burst_time
+        self.waiting_time = 0
+        self.terminate_time = -1
+
+    def __str__(self):
+        TT = self.terminate_time - self.arrive_time
+        return f"<process{self._number}>\nWT: {self.waiting_time}, TT: {TT}, NTT: {TT / self.burst_time:.1f}"
+
+
+class Processor:
+    def __init__(self, core="e"):
+        self._core = core
+        self.work = []
+        self.power = 0
+        self.time_quantum = None
+        self.INFO = []
+
+class Scheduling:
+    def __init__(self, process_num, processor_num, p_core_num, arrive_time, burst_time, time_quantum=None):
+        self.process_num = process_num
+        self.processor_num = processor_num
+        self.processors = {}
+        self.processes = {}
+        self.ready_q = []
+        self.time = 0
+        self.time_quantum = time_quantum
+        self.power_consumption = 0
+        self.readyqueue = []
+        self.WT = []
+        self.BT = []
+        self.TT = []
+        self.NTT = []
+        self.POWER = []
+
+        # 프로세서 객체 생성.
+        for i in range(1, processor_num + 1):
+            if p_core_num > 0:
+                self.processors[i] = Processor("p")
+                p_core_num -= 1
+
+            else:
+                self.processors[i] = Processor()
+
+        # 프로세스 객체 생성.
+        for i in range(process_num):
+            self.processes[i + 1] = Process(i + 1, arrive_time[i], burst_time[i])
+
+    # 도착시간이 가장 늦은 시간을 찾는 작업
+    def _find_max_arrive_time(self):
+        max_arr = -1
+        for i in range(1, self.process_num + 1):
+            max_arr = max(max_arr, self.processes[i].arrive_time)
+        return max_arr
+
+    # 모든 프로세서들을 살펴보아 하나의 프로세스라도 일하고 있다면 True를 리턴
+    def _working(self):
+        for i in range(1, self.processor_num + 1):
+            if self.processors[i].work != []:
+                return True
+        return False
+
+    # 작업수행이 가능한 프로세서, 즉 비어있는 프로세서를 찾는 작업
+    def _find_empty_processor(self):
+        for i in range(1, self.processor_num + 1):
+            if not self.processors[i].work:
+                return i
+
+        return False
+
+    def _calculate_waiting_time(self):
+        for i in self.ready_q:
+            tmp = i[1]
+            self.processes[tmp].waiting_time += 1
+
+    def _calculate_power_consumption(self):
+        for i in range(1, self.processor_num + 1):
+            self.power_consumption += self.processors[i].power
+
+    def _fill_ready_q_for_RR(self, visited):
+        for i in range(1, self.process_num + 1):
+            if not visited[i] and self.time >= self.processes[i].arrive_time:
+                self.ready_q.append([self.processes[i].burst_time, self.processes[i]._number])
+                visited[i] = True
+
+    def _fill_ready_q(self, visited):
+        for i in range(1, self.process_num + 1):
+            if not visited[i] and self.time >= self.processes[i].arrive_time:
+                heapq.heappush(self.ready_q, [self.processes[i].burst_time, self.processes[i]._number])
+                visited[i] = True
+
+    def _processor_running(self, RR=False):
+        # 프로세서 하나씩 처리 >> 1초 처리하는 거임
+        for i in range(1, self.processor_num + 1):
+            # i 번째 프로세서의 프로세스
+            tmp_process = self.processors[i].work[:]
+            # i 번째 프로세서에게 할당 받은 프로세스가 있으면 작업 수행
+            if tmp_process:
+                # 프로세스 번호
+                tmp_process_num = tmp_process[1]
+                # 만약 i번째 프로세서가 p코어 일 경우
+                if self.processors[i]._core == "p":
+                    # 프로세스 실행시간 2 감소
+                    tmp_process[0] -= 2
+                    # i번째 프로세서의 전력 소비량 3 증가
+                    self.processors[i].power += 3
+                # i번째 프로세스가 e 코어 일 경우
+                else:
+                    # 프로세스 실행시간 1 감소
+                    tmp_process[0] -= 1
+                    # i번째 프로세서의 전력 소비량 1 증가
+                    self.processors[i].power += 1
+                # i번째 프로세서의 time_quantum 1 감소
+                if RR:
+                    self.processors[i].time_quantum -= 1
+
+                # 프로세스가 종료되었다면
+                if tmp_process[0] <= 0:
+                    # i번째 프로세서에서 제거
+                    self.processors[i].work = []
+                    # 종료된 프로세스의 종료시간 저장
+                    self.processes[tmp_process_num].terminate_time = self.time + 1
+                # 프로세스의 실행시간이 남아있다면
+                else:
+                    self.processors[i].work = tmp_process
+            # i번째 프로세서에 할당된 프로세스가 없을 경우
+            else:
+                # i번째 프로세서의 전력 소비량 증가 >> 대기전력 소비량
+                self.processors[i].power += 0.1
+
+    def Shortest_Process_Next(self):
+        visited = [False] * (self.process_num + 1)
+        max_arr_time = self._find_max_arrive_time()
+        # 도착할 프로세스들이 없고, 레디큐에도 프로세스가 없고 일하고 있는 프로세스가 없을 경우 while loop 종료! >> 스케줄링 종료
+        while self.time <= max_arr_time or self.ready_q or self._working():
+
+            # 레디큐에 도착한 프로세스 레디큐에 넣어주기
+            self._fill_ready_q(visited)
+
+            # 레디 큐가 빌 때까지 반복 >> 프로세서들에게 프로세스를 뿌려줄 수 있는 만큼 모두 뿌려주기
+            while self.ready_q:
+                # 빈 프로세서를 찾고
+                empty_processor = self._find_empty_processor()
+                # 일을 안하고 있는 프로세서가 없다면 종료
+                if not empty_processor:
+                    break
+                # 레디 큐에 있는 프로세스를 빈 프로세서에게 넣어준다.
+                self.processors[empty_processor].work = heapq.heappop(self.ready_q)
+            # 앞에서 이미 프로세서들에게 할당해줄 만큼 할당해 줬으므로 레디 큐에 남아 있는 프로세스들은 기다릴 수 밖에 없다 >> 대기시간 계산
+            self._calculate_waiting_time()
+
+            self.setRQ()
+            self.setPROCESSOR_INFO()
+
+            # 모두 프로세서들에게 프로세스를 배치 했으므로 프로세스 일하기
+            self._processor_running()
+
+            self.time += 1
+
+        '''스케줄링 마친 후 총 전력 소비량 계산'''
+        self._calculate_power_consumption()
+
+    def Shortest_Remaining_Time_Next(self):
+
+        visited = [False] * (self.process_num + 1)
+        max_arr_time = self._find_max_arrive_time()
+        # 도착할 프로세스들이 없고, 레디큐에도 프로세스가 없고 일하고 있는 프로세스가 없을 경우 while loop 종료! >> 스케줄링 종료
+        while self.time <= max_arr_time or self.ready_q or self._working():
+
+            # 레디큐에 도착한 프로세스 레디큐에 넣어주기
+            self._fill_ready_q(visited)
+            '''남은 수행시간 기준 선점 스케줄링 임'''
+            # 프로세서들 하나씩 확인
+            for i in range(1, self.processor_num + 1):
+                # 레디 큐가 비었으면 할당 종료
+                if not self.ready_q:
+                    break
+                # tmp = 레디 큐 안의 최소 수행시간 프로세서
+                tmp = heapq.heappop(self.ready_q)
+                # 프로세서가 비었다면 바로 넣기
+                if self.processors[i].work == []:
+                    self.processors[i].work = tmp
+
+                else:
+                    # 레디큐에서 새로 꺼낸 프로세스가 i번째 프로세서에게 할당 된 프로세서보다 실행시간이 작을 경우 >> 선점
+                    if tmp[0] < self.processors[i].work[0]:
+                        # 둘이 위치 바꾸어주기
+                        heapq.heappush(self.ready_q, self.processors[i].work)
+                        self.processors[i].work = tmp
+                    # 반대일 경우 >> 다시 레디큐에 넣기
+                    else:
+                        heapq.heappush(self.ready_q, tmp)
+
+            # 앞에서 이미 프로세서들에게 할당해줄 만큼 할당해 줬으므로 레디 큐에 남아 있는 프로세스들은 기다릴 수 밖에 없다 >> 대기시간 계산
+            self._calculate_waiting_time()
+
+            self.setRQ()
+            self.setPROCESSOR_INFO()
+
+            # 모두 프로세서들에게 프로세스를 배치 했으므로 프로세스 일하기
+            self._processor_running()
+
+            self.time += 1
+
+        '''스케줄링 마친 후 총 전력 소비량 계산'''
+        self._calculate_power_consumption()
+
+    def Round_Robin(self):
+        visited = [False] * (self.process_num + 1)
+        # 도착하는 프로세스 중 도착시간이 제일 긴 시간을 찾는다.
+        max_arr_time = self._find_max_arrive_time()
+        # 현재시간이 최대 도착시간보다 크고, 레디큐가 비었으며, 모든 프로세스가 일을 안한다면 스케줄링 종료
+        while self.time <= max_arr_time or self.ready_q or self._working():
+
+            # 도착한 프로세스들 레디큐에 삽입
+            self._fill_ready_q_for_RR(visited)
+
+            '''레디 큐에서 프로세서들에게 프로세스 할당하는 과정'''
+            # 먼저 각 프로세서를 살피며 time-out 빼서 레디큐에 넣어주기
+            for i in range(1, self.processor_num + 1):
+                # time quantum 다 되면서 burst_time이 남아 있는 프로세스를 레디큐에 넣어주기
+                if self.processors[i].time_quantum == 0 and self.processors[i].work:
+                    self.ready_q.append(self.processors[i].work)
+                    self.processors[i].work = []
+
+            # 레디 큐에서 프로세서들에게 프로세스 할당해주기.
+            for i in range(1, self.processor_num + 1):
+                # 레디 큐 비었으면 할당 종료
+                if not self.ready_q:
+                    break
+                # 해당 프로세서가 비었다면 바로 할당하고 TIME quantum 부여
+                if self.processors[i].work == []:
+                    self.processors[i].work = self.ready_q.pop(0)
+                    self.processors[i].time_quantum = self.time_quantum
+
+            self._calculate_waiting_time()
+
+            self.setRQ()
+            self.setPROCESSOR_INFO()
+
+            # 프로세서 작업 수행
+            self._processor_running(True)
+
+            # 현재 시간 증가
+            self.time += 1
+
+        '''스케줄링 마친 후 총 전력 소비량 계산'''
+        self._calculate_power_consumption()
+
+    '''데이터 셋'''
+
+    def setRQ(self):
+        if len(self.ready_q) == 0:
+            self.readyqueue.append([])
+        else:
+            tmp = []
+            for i in self.ready_q:
+                tmp.append("P" + str(i[1]))
+            self.readyqueue.append(tmp)
+
+    def setPROCESSOR_INFO(self):
+        for i in range(1, self.processor_num + 1):
+            if self.processors[i].work == []:
+                self.processors[i].INFO.append(0)
+
+            else:
+                num = self.processors[i].work[1]
+                self.processors[i].INFO.append(num)
+
+    '''데이터 얻는 메서드'''
+
+    def getRQ(self):
+        # print(len(self.readyqueue))
+        return self.readyqueue
+
+    def getWT(self):
+        for i in range(1, self.process_num + 1):
+            self.WT.append(self.processes[i].waiting_time)
+        return self.WT
+
+    def getBT(self):
+        for i in range(1, self.process_num + 1):
+            self.BT.append(self.processes[i].burst_time)
+        return self.BT
+
+    def getTT(self):
+        for i in range(1, self.process_num + 1):
+            self.TT.append(self.processes[i].terminate_time - self.processes[i].arrive_time)
+        return self.TT
+
+    def getNTT(self):
+        for i in range(self.process_num):
+            self.NTT.append(round(self.TT[i] / self.BT[i], 2))
+        return self.NTT
+
+    def getPOWER(self):
+        for i in range(1, self.processor_num + 1):
+            self.POWER.append((self.processors[i]._core.upper() + "core", round(self.processors[i].power, 2)))
+        return self.POWER
+
+    def getTOTALPOWER(self):
+        TOTALPOWER = 0
+        for i in self.POWER:
+            TOTALPOWER += i[1]
+        return round(TOTALPOWER, 2)
+
+    def getTIME(self):
+        return self.time
+
+    # 각 프로세서의 로그를 얻는 매서드
+    def getLOG(self):
+        log = []
+        for i in range(1, self.processor_num + 1):
+            log.append(self.processors[i].INFO)
+        return log
+
+    # 코어의 종류를 얻는 매서드
+    def getCORETYPES(self):
+        res = []
+        for i in range(1, self.processor_num + 1):
+            res.append(self.processors[i]._core.upper() + "core")
+        return res
