@@ -13,7 +13,7 @@ heap 자료구조의 특징(min heap 기준)
 그 노드의 왼쪽 자식의 인덱스는 2k
 그 노드의 오른쪽 자식의 인덱스는 2k + 1 이 된다.
 
-따라서 어떤 정렬되어 있지 않은 배열이 들어오게 되면 자연스럽게 완전 이진트리를 구성할 수 있고
+따라서 어떤 정렬되어 있지 않은 배열이 들어오게 되면 자연스럽게 완전 이진 트리를 구성할 수 있고
 heapness 특성을 만족하게 조정만 해준다면 heap자료구조를 만들 수 있다.
 
 
@@ -27,23 +27,23 @@ def heapify(arr, idx, n):
     # 해당 노드의 자식이 두개일 경우
     if right <= n:
         # 두 자식 중 작은 놈을 골라
-        if arr[left] < arr[right]:
-            smaller = left
+        if arr[left] > arr[right]:
+            larger = left
         else:
-            smaller = right
+            larger = right
     # 자식이 하나일 경우
     elif left <= n:
-        smaller = left
+        larger = left
     # 자식이 없을 경우
     else:
         return
 
     # 부모보다 자식이 더 작을 경우
-    if arr[idx] > arr[smaller]:
+    if arr[idx] < arr[larger]:
         # heapness 를 만족시키기 위해 swap
-        arr[idx], arr[smaller] = arr[smaller], arr[idx]
+        arr[idx], arr[larger] = arr[larger], arr[idx]
         # 바꾼 자식 노드를 기준으로 재귀호출
-        heapify(arr, smaller, n)
+        heapify(arr, larger, n)
 
 # 세타((n / 2) * logn) == 세타(nlogn)
 def build_heap(arr, n):
@@ -63,30 +63,28 @@ def Heap_Sort(arr):
     return tmp
 
 
+if __name__ == "__main__":
 
+    # 정렬 테스트
+    import random
+    TC = int(input())
+    n = 20
+    # n = int(input("배열의 크기를 입력하세요: "))
+    flag = True
+    while TC > 0:
+        array = []
 
+        for _ in range(n):
+            array.append(random.randint(-30, 30))
 
+        Test = sorted(array)
+        result = Heap_Sort(array)
 
-# 정렬 테스트
-import random
-TC = int(input())
-n = 20
-# n = int(input("배열의 크기를 입력하세요: "))
-flag = True
-while TC > 0:
-    array = []
+        if Test != result:
+            flag = False
+            break
 
-    for _ in range(n):
-        array.append(random.randint(-30, 30))
+        TC -= 1
 
-    Test = sorted(array, reverse=True)
-    result = Heap_Sort(array)
-
-    if Test != result:
-        flag = False
-        break
-
-    TC -= 1
-
-if flag:
-    print("correctly Sorted!")
+    if flag:
+        print("correctly Sorted!")

@@ -27,7 +27,7 @@ def partition(arr, start, end):
     i, j = start - 1, start
 
     while j < end:
-        if arr[j] < arr[pivot]:
+        if arr[j] <= arr[pivot]:
             i += 1
             arr[i], arr[j] = arr[j], arr[i]
         j += 1
@@ -39,30 +39,32 @@ def partition(arr, start, end):
 def Quick_Sort(arr, start, end):
     if start < end:
         pivot = partition(arr, start, end)
-        Quick_Sort(arr, pivot + 1, end)
         Quick_Sort(arr, start, pivot - 1)
+        Quick_Sort(arr, pivot + 1, end)
 
+if __name__ == "__main__":
 
-# 정렬 테스트
-import random
-TC = int(input())
-n = 20
-# n = int(input("배열의 크기를 입력하세요: "))
-flag = True
-while TC > 0:
-    array = []
+    # 정렬 테스트
+    import random
+    TC = int(input())
+    n = 20
+    # n = int(input("배열의 크기를 입력하세요: "))
+    flag = True
+    while TC > 0:
+        array = []
 
-    for _ in range(n):
-        array.append(random.randint(-30, 30))
+        for _ in range(n):
+            array.append(random.randint(-30, 30))
 
-    Test = sorted(array)
-    Quick_Sort(array, 0, n - 1)
+        Test = sorted(array)
+        Quick_Sort(array, 0, n - 1)
 
-    if Test != array:
-        flag = False
-        break
+        if Test != array:
+            flag = False
+            break
 
-    TC -= 1
+        TC -= 1
 
-if flag:
-    print("correctly Sorted!")
+    if flag:
+        print("correctly Sorted!")
+

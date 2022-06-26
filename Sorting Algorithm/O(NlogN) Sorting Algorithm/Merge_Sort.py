@@ -63,26 +63,28 @@ def Merge_Sort(arr, start, end):
         Merge_Sort(arr, mid + 1, end)
         merge(start, mid, end, arr)
 
-# 정렬 테스트
-import random
-TC = int(input())
-n = 20
-# n = int(input("배열의 크기를 입력하세요: "))
-flag = True
-while TC > 0:
-    array = []
+if __name__ == "__main__":
 
-    for _ in range(n):
-        array.append(random.randint(-30, 30))
+    # 정렬 테스트
+    import random
+    TC = int(input())
+    n = 20
+    # n = int(input("배열의 크기를 입력하세요: "))
+    flag = True
+    while TC > 0:
+        array = []
 
-    Test = sorted(array)
-    Merge_Sort(array, 0, n - 1)
+        for _ in range(n):
+            array.append(random.randint(-30, 30))
 
-    if Test != array:
-        flag = False
-        break
+        Test = sorted(array)
+        Merge_Sort(array, 0, n - 1)
 
-    TC -= 1
+        if Test != array:
+            flag = False
+            break
 
-if flag:
-    print("correctly Sorted!")
+        TC -= 1
+
+    if flag:
+        print("correctly Sorted!")
