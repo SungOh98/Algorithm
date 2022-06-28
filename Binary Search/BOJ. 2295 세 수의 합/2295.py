@@ -1,19 +1,19 @@
 '''
-¼¼ ¼öÀÇ ÇÕ
-n°³ÀÇ ÀÚ¿¬¼öµé·Î ÀÌ·ç¾îÁø ÁýÇÕ s°¡ ÀÖ´Ù.
-ÀÌ Áß¿¡¼­ ¼¼ ¼ö¸¦ °í¸£°í ±× ¼¼¼öÀÇ ÇÕÀÌ ¿©ÀüÈ÷ ÁýÇÕ s¿¡ ÀÖ´Â °æ¿ì°¡ ÀÖ´Ù.
-ÀÌ·± °æ¿ìµé Áß °¡Àå Å« ¼¼¼öÀÇ ÇÕ d¸¦ Ã£À¸¶ó.
-ÀÔ·ÂÀ¸·Î ¹Þ´Â ¼öµéÀº ¸ðµÎ ´Ù¸¥ ¼ýÀÚµé ÀÌ´Ù.
-¼¼¼ö´Â °°¾Æµµ µÈ´Ù.
+ì„¸ ìˆ˜ì˜ í•©
+nê°œì˜ ìžì—°ìˆ˜ë“¤ë¡œ ì´ë£¨ì–´ì§„ ì§‘í•© sê°€ ìžˆë‹¤.
+ì´ ì¤‘ì—ì„œ ì„¸ ìˆ˜ë¥¼ ê³ ë¥´ê³  ê·¸ ì„¸ìˆ˜ì˜ í•©ì´ ì—¬ì „ížˆ ì§‘í•© sì— ìžˆëŠ” ê²½ìš°ê°€ ìžˆë‹¤.
+ì´ëŸ° ê²½ìš°ë“¤ ì¤‘ ê°€ìž¥ í° ì„¸ìˆ˜ì˜ í•© dë¥¼ ì°¾ìœ¼ë¼.
+ìž…ë ¥ìœ¼ë¡œ ë°›ëŠ” ìˆ˜ë“¤ì€ ëª¨ë‘ ë‹¤ë¥¸ ìˆ«ìžë“¤ ì´ë‹¤.
+ì„¸ìˆ˜ëŠ” ê°™ì•„ë„ ëœë‹¤.
 5 <= N <= 1000
-baaaaaaking dog´ÔÀÇ ¿µ»ó Âü°í Ç®ÀÌ
+baaarking dogë‹˜ì˜ ì˜ìƒ ì°¸ê³  í’€ì´
 
-arr[i], arr[j], arr[k] ÀÇ ÇÕÀ» Ã£´Â ¹®Á¦¿¡¼­
-arr[i]¿Í arr[j]ÀÇ ÇÕÀ» ¹Ì¸® ±¸¼ºÇØ ³õÀº temp ¹è¿­À» ¸¸µé¾î
-temp ¿¡¼­ ÀÌºÐ Å½»öÀ» ÁøÇàÇÏ¿© arr[l] - arr[k] °ªÀÌ ÀÖ´ÂÁö º¯ÇüÇÏ´Â °ÍÀÌ ÇÙ½É ¾ÆÀÌµð¾î
-( arr[k] + temp[i] °¡ arrÀÇ ¿ø¼ÒÁß ÇÏ³ª¿¡ ÀÖ´Ù¸é ¼º°øÀÌ¹Ç·Î! )
+arr[i], arr[j], arr[k] ì˜ í•©ì„ ì°¾ëŠ” ë¬¸ì œì—ì„œ
+arr[i]ì™€ arr[j]ì˜ í•©ì„ ë¯¸ë¦¬ êµ¬ì„±í•´ ë†“ì€ temp ë°°ì—´ì„ ë§Œë“¤ì–´
+temp ì—ì„œ ì´ë¶„ íƒìƒ‰ì„ ì§„í–‰í•˜ì—¬ arr[l] - arr[k] ê°’ì´ ìžˆëŠ”ì§€ ë³€í˜•í•˜ëŠ” ê²ƒì´ í•µì‹¬ ì•„ì´ë””ì–´
+( arr[k] + temp[i] ê°€ arrì˜ ì›ì†Œì¤‘ í•˜ë‚˜ì— ìžˆë‹¤ë©´ ì„±ê³µì´ë¯€ë¡œ! )
 '''
-# µÎ°³¾¿ ¹Ì¸® ´õÇØ ³õÀº ¹è¿­À» »ý¼º
+# ë‘ê°œì”© ë¯¸ë¦¬ ë”í•´ ë†“ì€ ë°°ì—´ì„ ìƒì„±
 def make_new_arr(arr):
     temp = set()
     for i in range(n):
