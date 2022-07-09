@@ -36,12 +36,12 @@ def get_surplus(arr, value):
     return surplus
 
 
-def binary_search(array, m, max_v):
-    start, end = 0, max_v
-
+def binary_search(array, m):
+    start, end = 0, max(array)
+    # logm
     while start <= end:
         mid = (start + end) // 2
-
+        # n
         surplus = get_surplus(array, mid)
 
         if surplus == m:
@@ -57,14 +57,8 @@ def binary_search(array, m, max_v):
 
 
 n, m = map(int, input().split())
-# nlogn
 array = list(map(int, input().split()))
-max_v = max(array)
-# print(binary_search(array, m, max_v))
-
-while True:
-    k = int(input())
-    print(get_surplus(array, k))
+print(binary_search(array, m))
 
 '''
 반례
