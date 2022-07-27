@@ -31,8 +31,8 @@ def is_Possible(arr, c, dist):
     return c <= 0
 
 def parametric_search(array, c):
-    start, end = 0, max(array)
-    # start, end = 0, 1_000_000_000
+    # start, end = 0, max(array)
+    start, end = 0, 1_000_000_000
     # mid가 거리 x임
     # 하나의 x로 수렴할 때까지 이진 탐색을 수행!
     while start <= end:
