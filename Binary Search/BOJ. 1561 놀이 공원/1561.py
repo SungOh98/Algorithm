@@ -26,7 +26,7 @@ M개의 1인승 놀이기구 존재
 '''
 
 
-def is_not_positive(time, plays, people):
+def get_surplus(time, plays, people):
     for i in range(1, len(plays)):
         people -= (time // plays[i] + 1)
     # 놀이기구를 주어진 시간동안 태우고 남은 아이들의 숫자를 리턴함.
@@ -49,7 +49,7 @@ def parametric_search(plays, people):
 
     while start < end:
         time = (start + end) // 2
-        surplus = is_not_positive(time, plays, people)
+        surplus = get_surplus(time, plays, people)
         # 아이들을 모두 태운 경우임. >> 시간 줄여
         if surplus <= 0:
             end = time
@@ -57,7 +57,7 @@ def parametric_search(plays, people):
         else:
             start = time + 1
 
-    surplus = is_not_positive((start + end) // 2, plays, people)
+    surplus = get_surplus((start + end) // 2, plays, people)
     return surplus_to_answer(plays, surplus, (start + end) // 2)
 
 n, m = map(int, input().split())
