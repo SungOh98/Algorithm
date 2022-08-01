@@ -42,6 +42,7 @@ def surplus_to_answer(plays, surplus, time):
                 surplus += 1
 
 
+
 # print(is_possible(8, [0, 3, 4, 2, 5, 1], 22))
 
 def parametric_search(plays, people):
