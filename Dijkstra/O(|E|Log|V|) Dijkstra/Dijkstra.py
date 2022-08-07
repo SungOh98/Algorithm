@@ -1,6 +1,8 @@
 def Dijkstra(path, start, distance, n, graph):
     # Priority Queue 생성
     priority_queue = []
+    # 시작정점의 거리 0으로 설정
+    distance[start] = 0
     # Priority Queue에 시작 정점 삽입: <시작정점까지의 거리, 노드 번호>
     heapq.heappush(priority_queue, [0, 0])
     # Priority Queue가 빌때까지 반복
