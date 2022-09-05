@@ -33,8 +33,12 @@ def recur(n, start, end):
         print(start, end)  # N번 원판을 C로 옮긴다.
         recur(n - 1, 6 - start - end, end)  # N-1번 까지의 원판을 C로 옮긴다.
 
-
+'''
+T(N) = T(n - 1) + 1 + T(n - 1)
+>> N개의 하노이 탑을 옮기기 위해서는 N - 1개를 옮기고, 1개를 옮기고 , N - 1개를 옮겨야함.
+'''
 n = int(input())
+# 하노이 탑 이동 순서 시간 복잡도 O(2 ^ n)
 print((1 << n) - 1)
 recur(n, 1, 3)
 
