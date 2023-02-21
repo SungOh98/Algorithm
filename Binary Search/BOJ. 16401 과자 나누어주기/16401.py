@@ -8,48 +8,59 @@ m명의 조카가 있고, n개의 과자가 있을 때, 조카 1명에게 줄 �
 예제
 4 3
 10 10 15
+s : 0 e: 14 mid : 7
+s : 8 e: 14 mid : 11
+s : 8 e: 10 mid : 9
+s : 8 e : 8 mid : 8
+s : 8 e : 7 -> break
+
+3 10
+1 2 3 4 5 6 7 8 9 10
+
 
 15 짜리 과자를 7두개로 나누어 총 7길이의 과자 4개를 나누어 줄 수 있다.
 
 최대 최소 문제 + 입력값이 무지막지하게 크다 >> 파라메트릭 서치 의심!
 
 1. 최적화문제를 결정문제로 바꿀 수 있는가?
-임의의 과자 길이 x에 대해서 나누어 줄 수 있는 과자의 갯수가 m 이상인가? 아닌가?
+임의의 과자 길이 x로 m명의 조카에게 과자를 모두 나누어줄 수 있는가?
 2. 임의의 과자 길이가 증가 / 감소 함수로 접근 가능한가? >> 증가함수로 접근 가능하다!
 
+5 3
+1 2 1
+ans : 0
+s: 0 e: 3 mid : 1
+s : 0 e : 0
 
+1 1,000,000
+10억 .... 10억
 
+3
 '''
-# n의 시간 복잡도
-def get_number(array, length):
-    number = 0
-    for i in range(len(array)):
-        number += array[i] // length
 
-    return number
+def is_possible(x):
+    # 0이면 안나눠줘도 됨 -> 무조건 true.
+    if x == 0: return True
+    cnt = 0
+    for snack in snacks:
+        cnt += snack // x
+    return cnt >= m
 
-def binary_search(array, m):
-    start, end = 0, 1_000_000_000
-
+def parametric_search():
+    start, end = 0, int(1e9)
+    answer = 0
     while start <= end:
         mid = (start + end) // 2
 
-        if mid == 0:
-            return 0
-
-        number = get_number(array, mid)
-
-        # 나누어 줄 수 있는 과자의 갯수가 기준 값보다 크거나 같다면
-        if number >= m:
-            # 과자의 크기를 늘리기.
+        if is_possible(mid):
+            answer = mid
             start = mid + 1
-        # 나누어 줄 수 있는 과자의 갯수가 기준 값보다 작다면
         else:
-            # 과자의 크기를 줄이기.
             end = mid - 1
-    return (start + end) // 2
+    return answer
 
+import sys
+input = sys.stdin.readline
 m, n = map(int, input().split())
-array = list(map(int, input().split()))
-print(binary_search(array, m))
-
+snacks = list(map(int, input().split()))
+print(parametric_search())
